@@ -10,8 +10,8 @@ spec:
     targetRevision: HEAD
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: defaelt
+    namespace: default
   syncPolicy:
     automated:
       prune: true
-      selfHeal: true
+      selfHeal: true" > argocd/application.yaml
