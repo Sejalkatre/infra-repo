@@ -1,3 +1,4 @@
+
 data "aws_availability_zones" "available" {}
 
 # -----------------------------
@@ -39,6 +40,8 @@ resource "aws_subnet" "demo" {
     Name = "demo-subnet-${count.index}"
 
     "kubernetes.io/role/elb" = "1"
+
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }
 }
 
