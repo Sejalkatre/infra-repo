@@ -1,4 +1,3 @@
-
 # -----------------------------
 # Availability Zones
 # -----------------------------
@@ -82,36 +81,6 @@ resource "aws_route_table_association" "demo" {
 }
 
 # -----------------------------
-# Security Group
-# -----------------------------
-resource "aws_security_group" "eks" {
-
-  name        = "eks-security-group"
-  description = "Security group for EKS cluster"
-  vpc_id      = aws_vpc.demo.id
-
-  ingress {
-
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "eks-security-group"
-  }
-}
-
-# -----------------------------
 # EKS Cluster
 # -----------------------------
 module "eks" {
@@ -122,10 +91,12 @@ module "eks" {
   cluster_name    = var.cluster_name
   cluster_version = "1.29"
 
-  vpc_id     = aws_vpc.demo.id
-  subnet_ids = aws_subnet.demo[*].id
+  cluster_endpoint_public_access = true
 
   enable_irsa = true
+
+  vpc_id     = aws_vpc.demo.id
+  subnet_ids = aws_subnet.demo[*].id
 
   eks_managed_node_groups = {
 
