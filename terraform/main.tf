@@ -1,3 +1,28 @@
+terraform {
+
+  required_version = ">= 1.3.0"
+
+  required_providers {
+
+    aws = {
+
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+# -----------------------------
+# AWS Provider
+# -----------------------------
+provider "aws" {
+
+  region = "us-west-2"
+}
+
+# -----------------------------
+# Availability Zones
+# -----------------------------
 data "aws_availability_zones" "available" {}
 
 # -----------------------------
@@ -78,7 +103,7 @@ resource "aws_route_table_association" "demo" {
 }
 
 # -----------------------------
-# Security Group for EKS
+# Security Group
 # -----------------------------
 resource "aws_security_group" "eks" {
 
@@ -113,37 +138,23 @@ resource "aws_security_group" "eks" {
 module "eks" {
 
   source  = "terraform-aws-modules/eks/aws"
-  version = "21.20.0"
+  version = "20.8.5"
 
-  name               = var.cluster_name
-  kubernetes_version = "1.29"
+  cluster_name    = var.cluster_name
+  cluster_version = "1.29"
 
   vpc_id     = aws_vpc.demo.id
   subnet_ids = aws_subnet.demo[*].id
 
-  cluster_endpoint_public_access = true
-
-  enable_cluster_creator_admin_permissions = true
-
-  cluster_security_group_additional_rules = {
-
-    ingress_nodes_ephemeral = {
-
-      description                = "Node to cluster communication"
-      protocol                   = "tcp"
-      from_port                  = 1025
-      to_port                    = 65535
-      type                       = "ingress"
-      source_node_security_group = true
-    }
-  }
+  enable_irsa = true
 
   eks_managed_node_groups = {
 
     demo = {
 
-      ami_type       = "AL2_x86_64"
       instance_types = ["t3.micro"]
+
+      ami_type = "AL2_x86_64"
 
       capacity_type = "ON_DEMAND"
 
