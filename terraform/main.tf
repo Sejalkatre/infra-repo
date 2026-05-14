@@ -1,11 +1,11 @@
-# -----------------------------
+# =========================================================
 # Availability Zones
-# -----------------------------
+# =========================================================
 data "aws_availability_zones" "available" {}
 
-# -----------------------------
+# =========================================================
 # VPC
-# -----------------------------
+# =========================================================
 resource "aws_vpc" "demo" {
 
   cidr_block           = var.vpc_cidr
@@ -17,9 +17,9 @@ resource "aws_vpc" "demo" {
   }
 }
 
-# -----------------------------
+# =========================================================
 # Internet Gateway
-# -----------------------------
+# =========================================================
 resource "aws_internet_gateway" "demo" {
 
   vpc_id = aws_vpc.demo.id
@@ -29,9 +29,9 @@ resource "aws_internet_gateway" "demo" {
   }
 }
 
-# -----------------------------
+# =========================================================
 # Public Subnets
-# -----------------------------
+# =========================================================
 resource "aws_subnet" "demo" {
 
   count = length(var.subnet_cidrs)
@@ -51,9 +51,9 @@ resource "aws_subnet" "demo" {
   }
 }
 
-# -----------------------------
+# =========================================================
 # Route Table
-# -----------------------------
+# =========================================================
 resource "aws_route_table" "demo" {
 
   vpc_id = aws_vpc.demo.id
@@ -69,9 +69,9 @@ resource "aws_route_table" "demo" {
   }
 }
 
-# -----------------------------
+# =========================================================
 # Route Table Association
-# -----------------------------
+# =========================================================
 resource "aws_route_table_association" "demo" {
 
   count = length(aws_subnet.demo)
@@ -80,9 +80,9 @@ resource "aws_route_table_association" "demo" {
   route_table_id = aws_route_table.demo.id
 }
 
-# -----------------------------
+# =========================================================
 # EKS Cluster
-# -----------------------------
+# =========================================================
 module "eks" {
 
   source  = "terraform-aws-modules/eks/aws"
@@ -90,6 +90,13 @@ module "eks" {
 
   cluster_name    = var.cluster_name
   cluster_version = "1.29"
+
+  # -------------------------------------------------------
+  # IMPORTANT
+  # -------------------------------------------------------
+  authentication_mode = "API_AND_CONFIG_MAP"
+
+  enable_cluster_creator_admin_permissions = true
 
   cluster_endpoint_public_access = true
 
@@ -127,4 +134,15 @@ module "eks" {
     Environment = "dev"
     Terraform   = "true"
   }
+}
+
+# =========================================================
+# Outputs
+# =========================================================
+output "cluster_name" {
+  value = module.eks.cluster_name
+}
+
+output "cluster_endpoint" {
+  value = module.eks.cluster_endpoint
 }
