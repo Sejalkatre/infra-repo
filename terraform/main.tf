@@ -4,16 +4,6 @@
 data "aws_availability_zones" "available" {}
 
 # =========================================================
-# Random Suffix For Unique KMS Alias
-# =========================================================
-resource "random_string" "suffix" {
-
-  length  = 5
-  special = false
-  upper   = false
-}
-
-# =========================================================
 # VPC
 # =========================================================
 resource "aws_vpc" "demo" {
@@ -119,7 +109,7 @@ module "eks" {
   enable_kms_key_rotation = true
 
   kms_key_aliases = [
-    "eks-${var.cluster_name}-${random_string.suffix.result}"
+    "eks-${var.cluster_name}-01"
   ]
 
   # =====================================================
