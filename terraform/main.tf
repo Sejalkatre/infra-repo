@@ -103,17 +103,8 @@ module "eks" {
   subnet_ids = aws_subnet.demo[*].id
 
   # =====================================================
-  # KMS Settings
-  # =====================================================
-
-  enable_kms_key_rotation = true
-
-  kms_key_aliases = [
-    "eks-${var.cluster_name}-01"
-  ]
-
-  # =====================================================
-  # Managed Node Group
+  # IMPORTANT:
+  # Removed custom KMS alias settings
   # =====================================================
 
   eks_managed_node_groups = {
