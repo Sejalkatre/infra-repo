@@ -91,9 +91,6 @@ module "eks" {
   cluster_name    = var.cluster_name
   cluster_version = "1.29"
 
-  # -------------------------------------------------------
-  # IMPORTANT
-  # -------------------------------------------------------
   authentication_mode = "API_AND_CONFIG_MAP"
 
   enable_cluster_creator_admin_permissions = true
@@ -134,15 +131,4 @@ module "eks" {
     Environment = "dev"
     Terraform   = "true"
   }
-}
-
-# =========================================================
-# Outputs
-# =========================================================
-output "cluster_name" {
-  value = module.eks.cluster_name
-}
-
-output "cluster_endpoint" {
-  value = module.eks.cluster_endpoint
 }
