@@ -4,6 +4,16 @@
 data "aws_availability_zones" "available" {}
 
 # =========================================================
+# Random Suffix For Unique KMS Alias
+# =========================================================
+resource "random_string" "suffix" {
+
+  length  = 5
+  special = false
+  upper   = false
+}
+
+# =========================================================
 # VPC
 # =========================================================
 resource "aws_vpc" "demo" {
@@ -101,6 +111,20 @@ module "eks" {
 
   vpc_id     = aws_vpc.demo.id
   subnet_ids = aws_subnet.demo[*].id
+
+  # =====================================================
+  # KMS Settings
+  # =====================================================
+
+  enable_kms_key_rotation = true
+
+  kms_key_aliases = [
+    "eks-${var.cluster_name}-${random_string.suffix.result}"
+  ]
+
+  # =====================================================
+  # Managed Node Group
+  # =====================================================
 
   eks_managed_node_groups = {
 
